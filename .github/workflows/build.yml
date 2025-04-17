@@ -1,0 +1,17 @@
+name: build
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # https://github.com/sdkman/sdkman-action/issues/16
+      - uses: sdkman/sdkman-action@b1f9b696c79148b66d3d3a06f7ea801820318d0f
+      - uses: android-actions/setup-android@v3
+      - run: ./gradlew :app:assembleDebug :app:bundleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: |
+            app/build/outputs/apk/debug/
+            app/build/outputs/bundle/debug/
