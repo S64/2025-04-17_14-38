@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val unloadAdView: Button by lazy { findViewById(R.id.unloadAdView) }
 
+    private val placeholderNotice: TextView by lazy { findViewById(R.id.placeholderNotice) }
     private val placeholder: FrameLayout by lazy { findViewById(R.id.placeholder) }
 
     private val logRecycler: RecyclerView by lazy { findViewById(R.id.logRecycler) }
@@ -161,21 +163,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun refreshUiStatus() {
-        (currentContainer != null).let { containerAttached ->
-            placeNewContainerButton.isEnabled = !containerAttached
-            removeContainerButton.isEnabled = containerAttached
-            currentAdView.let { adView ->
-                removeAdViewNotice.visibility = if (adView?.isUnloaded == false) View.VISIBLE else View.GONE
-                loadAdViewNotice.visibility = if (adView?.isLoaded == true) View.VISIBLE else View.GONE
-                (adView != null).let { adViewAttached ->
-                    placeNewAdView.isEnabled = containerAttached && !adViewAttached
-                    removeAdView.isEnabled = adViewAttached
-                    loadAdView.isEnabled = adViewAttached
-                    unloadAdView.isEnabled = adViewAttached
+        currentContainer.let { container ->
+            (container != null).let { containerAttached ->
+                placeNewContainerButton.isEnabled = !containerAttached
+                removeContainerButton.isEnabled = containerAttached
+                placeholderNotice.text = "Container view: ${ if (containerAttached) System.identityHashCode(container) else "N/A" }"
+                currentAdView.let { adView ->
+                    removeAdViewNotice.visibility = if (adView?.isUnloaded == false) View.VISIBLE else View.GONE
+                    loadAdViewNotice.visibility = if (adView?.isLoaded == true) View.VISIBLE else View.GONE
+                    (adView != null).let { adViewAttached ->
+                        placeNewAdView.isEnabled = containerAttached && !adViewAttached
+                        removeAdView.isEnabled = adViewAttached
+                        loadAdView.isEnabled = adViewAttached
+                        unloadAdView.isEnabled = adViewAttached
+                    }
                 }
             }
         }
+
     }
 
     private fun log(msg: String) {
